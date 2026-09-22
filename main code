@@ -1,0 +1,40 @@
+from pathlib import Path
+from pydantic import BaseModel, Field
+
+class BatchProcessorConfig(BaseModel):
+    target_directory: Path = Field(..., description="Target directory containing files")
+    prefix: str = Field(default="", description="Prefix to add to filenames")
+    target_extension: str | None = Field(default=None, description="Optional new file extension (e.g., .txt)")
+
+def process_files(config: BatchProcessorConfig) -> int:
+    if not config.target_directory.exists():
+        print(f"Directory {config.target_directory} does not exist.")
+        return 0
+
+    processed_count = 0
+    for file_path in config.target_directory.iterdir():
+        if file_path.is_file():
+            new_name = f"{config.prefix}{file_path.stem}"
+            if config.target_extension:
+                new_name += config.target_extension
+            else:
+                new_name += file_path.suffix
+                
+            new_path = file_path.with_name(new_name)
+            file_path.rename(new_path)
+            print(f"Renamed: {file_path.name} -> {new_name}")
+            processed_count += 1
+            
+    return processed_count
+
+if name == "main":
+    # Example usage configuration
+    config = BatchProcessorConfig(
+        target_directory=Path("./files"),
+        prefix="new_",
+    )
+    total_processed = process_files(config)
+    print(f"Done! Successfully processed files: {total_processed}")
+    # HOW TO RUN
+    #INSTALL PYTHON, PATHLIB AND PYDANTIC LIBLARIES
+    #OR JUST TEXT ME, WILL DO FOR A 25-100$. MY TG IS: @Myhamed91
