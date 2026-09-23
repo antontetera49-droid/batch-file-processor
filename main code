@@ -1,6 +1,16 @@
 from pathlib import Path
 from pydantic import BaseModel, Field
 
+"""
+HOW TO USE:
+1. Make sure Python 3.8+ is installed on your system.
+2. Install the required Pydantic library via terminal/command prompt:
+   pip install pydantic
+3. Put the files you want to rename into a folder (e.g., a folder named 'files' in the same directory).
+4. Run the script:
+   python main.py
+"""
+
 class BatchProcessorConfig(BaseModel):
     target_directory: Path = Field(..., description="Target directory containing files")
     prefix: str = Field(default="", description="Prefix to add to filenames")
@@ -21,6 +31,12 @@ def process_files(config: BatchProcessorConfig) -> int:
                 new_name += file_path.suffix
                 
             new_path = file_path.with_name(new_name)
+            
+            # Prevent overwriting existing files
+            if new_path.exists():
+                print(f"Skipped: {new_name} already exists.")
+                continue
+                
             file_path.rename(new_path)
             print(f"Renamed: {file_path.name} -> {new_name}")
             processed_count += 1
@@ -35,6 +51,10 @@ if name == "main":
     )
     total_processed = process_files(config)
     print(f"Done! Successfully processed files: {total_processed}")
-    # HOW TO RUN
-    #INSTALL PYTHON, PATHLIB AND PYDANTIC LIBLARIES
-    #OR JUST TEXT ME, WILL DO FOR A 25-100$. MY TG IS: @Myhamed91
+
+    # =========================================================================
+    # NEED A CUSTOM WORKFLOW, GUI, OR SPECIFIC AUTOMATION FOR YOUR BUSINESS?
+    # Don't waste time tweaking scripts. Let me build a tailored solution for you.
+    # Pricing: $25 - $100 depending on complexity. 
+    # Telegram: @Myhamed91
+    # =========================================================================
